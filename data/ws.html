@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Heatersettings</title>
+    <link rel="stylesheet" href="src/bootstrap.min.css">
+    <link rel="stylesheet" href="src/styles.css">
+    <script type="text/javascript">
+        let hoursDay;
+        let minutesDay;
+        let hoursNight;
+        let minutesNight;
+        let stateNight;
+        let stateDay;
+
+        function select(data){
+            hoursDay.options.selectedIndex = data.hoursDay;
+            minutesDay.options.selectedIndex = data.minutesDay;
+            hoursNight.options.selectedIndex = data.hoursNight;
+            minutesNight.options.selectedIndex = data.minutesNight;
+            stateNight.options.selectedIndex = data.stateNight;
+            stateDay.options.selectedIndex = data.stateDay;
+        }
+
+        function submit(){
+            let data = { "hoursDay":hoursDay.value,
+                "minutesDay":minutesDay.value,
+                "hoursNight":hoursNight.value,
+                "minutesNight":minutesNight.value,
+                "stateNight":stateNight.value,
+                "stateDay":stateDay.value };
+
+            window.fetch("settings", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+        }
+
+        function createSelect() {
+            hoursDay = document.getElementById("hoursDay");
+            minutesDay = document.getElementById("minutesDay");
+            hoursNight = document.getElementById("hoursNight");
+            minutesNight = document.getElementById("minutesNight");
+            stateNight = document.getElementById("stateNight");
+            stateDay = document.getElementById("stateDay");
+            for (let i = 0; i < 24; i++) {
+                hoursDay.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for (let i = 0; i < 60; i++) {
+                minutesDay.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for (let i = 0; i < 24; i++) {
+                hoursNight.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for (let i = 0; i < 60; i++) {
+                minutesNight.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for (let i = 0; i <= 6; i++) {
+                stateNight.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for (let i = 0; i <= 6; i++) {
+                stateDay.options.add(new Option(i.toString(), i.toString()), i);
+            }
+
+            window.fetch("/set?get").then(function(data){
+                return data.json();
+            }).then(function(data){
+                console.log(data);
+                select(data);
+            });
+        }
+    </script>
+</head>
+
+<body onload="createSelect()">
+    <div style="background: rgba(252,252,252,0.64);">
+        <section class="d-flex justify-content-center align-items-center justify-content-xl-center">
+            <p class="d-xl-flex">State Day</p><select id="stateDay" class="btn btn-primary dropdown-toggle"></select>
+        </section>
+        <section class="d-flex justify-content-center align-items-xl-start">
+            <p class="d-flex d-xl-flex">State Night</p><select id="stateNight" class="btn btn-primary dropdown-toggle"></select>
+        </section>
+        <section class="d-flex justify-content-center align-items-xl-start">
+            <p>Time Day</p><select id="hoursDay" class="btn btn-primary dropdown-toggle"></select><select id="minutesDay" class="btn btn-primary dropdown-toggle"></select>
+        </section>
+        <section class="d-flex justify-content-center align-items-xl-start">
+            <p>Time Night</p><select id="hoursNight" class="btn btn-primary dropdown-toggle"></select><select id="minutesNight" class="btn btn-primary dropdown-toggle"></select>
+        </section>
+        <section class="d-flex justify-content-center"><button id="submitButton" onclick="submit()" class="btn btn-primary" type="button">Submit</button></section>
+    </div>
+    <script src="src/jquery.min.js"></script>
+    <script src="src/bootstrap.min.js"></script>
+</body>
+
+</html>

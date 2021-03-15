@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <style type="text/css">
+        body {
+            background-color: #373F43;
+            background: radial-gradient(dimgray, #373F43);
+        }
+
+        div {
+        }
+
+        p{
+            display: flex;
+            align-content: center;
+            justify-content: center;
+        }
+
+        p.submit{
+            padding-top: 60px;
+        }
+
+        button{
+            display:inline-block;
+            padding:0.3em 1.2em;
+            margin:0 0.3em 0.3em 0;
+            border-radius:2em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            font-weight:300;
+            color:dimgray;
+            background-color: #27408B;
+            text-align:center;
+            transition: all 0.2s;
+            position: relative;
+        }
+        button:hover{
+            background-color:grey;
+            color: lightgray;
+        }
+
+        select{
+            display:inline-block;
+            padding:0.3em 1.2em;
+            margin:0 0.3em 0.3em 0;
+            border-radius:2em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            font-weight:300;
+            color:dimgray;
+            background-color: #27408B;
+            text-align:center;
+            transition: all 0.2s;
+            position: relative;
+        }
+        select:hover{
+            background-color:grey;
+            color: lightgray;
+        }
+        @media all and (max-width:30em){
+            button{
+                display: inline;
+                margin: 0.2em auto;
+            }
+        }
+    </style>
+    <title>Heatersettings</title>
+
+    <script type="text/javascript">
+        let hoursDay;
+        let minutesDay;
+        let hoursNight;
+        let minutesNight;
+        let stateNight;
+        let stateDay;
+
+        let ws = new WebSocket("ws://192.168.178.63/ws");
+        let selected;
+
+        // ws.onopen = function(){
+        //     ws.send("Client Connected");
+        // }
+
+        ws.onmessage = function(evt){
+            let data = evt.data;
+            selected = data.split(';');
+            hoursDay.options.selectedIndex = parseInt(selected[0]);
+            minutesDay.options.selectedIndex = parseInt(selected[1]);
+            hoursNight.options.selectedIndex = parseInt(selected[2]);
+            minutesNight.options.selectedIndex = parseInt(selected[3]);
+            stateNight.options.selectedIndex = parseInt(selected[4]);
+            stateDay.options.selectedIndex = parseInt(selected[5]);
+        }
+        function submit(){
+            let send = "";
+            send += hoursDay.value + ";";
+            send += minutesDay.value + ";";
+            send += hoursNight.value + ";";
+            send += minutesDay.value + ";";
+            send += stateNight.value + ";";
+            send += stateDay.value + ";";
+
+            ws.send(send);
+        }
+
+        function createSelect() {
+            hoursDay = document.getElementById('hoursDay');
+            minutesDay = document.getElementById("minutesDay");
+            hoursNight = document.getElementById("hoursNight");
+            minutesNight = document.getElementById("minutesNight");
+            stateNight = document.getElementById("stateNight");
+            stateDay = document.getElementById("stateDay");
+
+            for(let i = 0; i < 24; i++){
+                hoursDay.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for(let i = 0; i < 60; i++){
+                minutesDay.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for(let i = 0; i < 24; i++){
+                hoursNight.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for(let i = 0; i < 60; i++){
+                minutesNight.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for(let i = 0; i < 6; i++){
+                stateNight.options.add(new Option(i.toString(), i.toString()), i);
+            }
+            for(let i = 0; i < 6; i++){
+                stateDay.options.add(new Option(i.toString(), i.toString()), i);
+            }
+        }
+    </script>
+</head>
+<body onload="createSelect()">
+    <div>
+        <p>State Day    <select id="stateDay"></select></p>
+        <p>State Night<select id="stateNight"></select></p>
+
+        <p>Time Day:    <select id="hoursDay"></select><select id="minutesDay"></select></p>
+        <p>Time Night:  <select id="hoursNight"></select><select id="minutesNight"></select></p>
+
+        <p class="submit"><button onclick = "submit()" id="submitButton">Submit</button></p>
+    </div>
+</body>
+</html>
